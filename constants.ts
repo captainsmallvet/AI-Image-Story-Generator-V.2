@@ -1,3 +1,4 @@
+
 export const ASPECT_RATIOS = ["16:9", "1:1", "3:4", "4:3", "9:16"] as const;
 
 export type AspectRatio = typeof ASPECT_RATIOS[number];
@@ -46,6 +47,16 @@ export const IMAGE_MODELS = [
 
 export type ImageModelKey = typeof IMAGE_MODELS[number]['key'];
 
+export const REASONING_MODELS = [
+    { key: 'gemini-3-flash-preview', name: 'Gemini 3.0 Flash (New Preview)' },
+    { key: 'gemini-3-pro-preview', name: 'Gemini 3.0 Pro (New Preview)' },
+    { key: 'gemini-flash-latest', name: 'Gemini Flash (Latest Stable)' },
+    { key: 'gemini-pro-latest', name: 'Gemini Pro (Latest Stable)' },
+    { key: 'gemini-flash-lite-latest', name: 'Gemini Flash Lite (Fastest)' },
+] as const;
+
+export type ReasoningModelKey = typeof REASONING_MODELS[number]['key'];
+
 export const STORY_LANGUAGES = [
     { key: 'thai', name: 'ภาษาไทย' },
     { key: 'english', name: 'ภาษาอังกฤษ' },
@@ -72,7 +83,7 @@ export const STORY_STYLES = [
     { key: 'sci_fi_novel', name: 'นิยายวิทยาศาสตร์' },
     { key: 'horror_novel', name: 'แนวผีหลอกวิญญาณหลอน' },
     { key: 'lighthearted_comedy', name: 'เรื่องตลก เบาสมอง' },
-    { key: 'inspiration', name: 'สร้างแรงบันดาลใจ' },
+    { key: 'inspiration', name: 'สร้างแรงบันาลใจ' },
     { key: 'analysis', name: 'พูดเชิงวิเคราะห์' },
     { key: 'adventure', name: 'ผจญภัย บู้ ตื่นเต้น' },
     { key: 'tear_jerker', name: 'เรื่องเศร้าเคล้าน้ำตา' },

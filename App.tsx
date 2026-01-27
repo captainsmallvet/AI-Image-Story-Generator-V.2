@@ -10,7 +10,7 @@ import {
     expandImage,
     updateActiveApiKey
 } from './services/geminiService';
-import { ASPECT_RATIOS, IMAGE_STYLES, IMAGE_MODELS, AspectRatio, ImageStyleKey, ImageModelKey } from './constants';
+import { ASPECT_RATIOS, IMAGE_STYLES, IMAGE_MODELS, REASONING_MODELS, AspectRatio, ImageStyleKey, ImageModelKey, ReasoningModelKey } from './constants';
 import Spinner from './components/Spinner';
 import ImagePlaceholder from './components/ImagePlaceholder';
 import ReferenceImages from './components/ReferenceImages';
@@ -34,7 +34,8 @@ const App: React.FC = () => {
     const [prompt, setPrompt] = useState<string>('');
     const [aspectRatio, setAspectRatio] = useState<AspectRatio>('16:9');
     const [style, setStyle] = useState<ImageStyleKey>('photorealistic');
-    const [model, setModel] = useState<ImageModelKey>('gemini-2.5-flash-image');
+    const [imageModel, setImageModel] = useState<ImageModelKey>('gemini-2.5-flash-image');
+    const [reasoningModel, setReasoningModel] = useState<ReasoningModelKey>('gemini-3-flash-preview');
     const [images, setImages] = useState<string[]>([]);
     const [referenceImages, setReferenceImages] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -95,7 +96,7 @@ const App: React.FC = () => {
 
         // Check key status before proceeding
         const hasKey = localStorage.getItem('user_api_key') || (process.env.API_KEY && process.env.API_KEY !== 'PLACEHOLDER_API_KEY');
-        if (!hasKey && model === 'gemini-3-pro-image-preview') {
+        if (!hasKey && imageModel === 'gemini-3-pro-image-preview') {
             try {
                 const nativeKey = await window.aistudio.hasSelectedApiKey();
                 if (!nativeKey) await window.aistudio.openSelectKey();
@@ -109,7 +110,7 @@ const App: React.FC = () => {
         setError(null);
         setImages([]);
         
-        const isGeminiModel = model === 'gemini-2.5-flash-image' || model === 'gemini-3-pro-image-preview';
+        const isGeminiModel = imageModel === 'gemini-2.5-flash-image' || imageModel === 'gemini-3-pro-image-preview';
         let effectiveCount = (referenceImages.length > 0 || isGeminiModel) ? 1 : count;
         setLoadingCount(effectiveCount);
 
@@ -118,7 +119,7 @@ const App: React.FC = () => {
             if (referenceImages.length > 0) {
                  generatedImages = await generateFromImageAndText(prompt, referenceImages);
             } else {
-                 generatedImages = await generateFromText(prompt, effectiveCount as 1 | 4, aspectRatio, style, model);
+                 generatedImages = await generateFromText(prompt, effectiveCount as 1 | 4, aspectRatio, style, imageModel);
             }
             setImages(generatedImages);
         } catch (err) {
@@ -141,7 +142,7 @@ const App: React.FC = () => {
             setLoading(false);
             setLoadingCount(0);
         }
-    }, [prompt, aspectRatio, style, model, referenceImages]);
+    }, [prompt, aspectRatio, style, imageModel, referenceImages]);
 
     const handleSetReference = useCallback((imageSrc: string) => {
         if (referenceImages.length < 4) {
@@ -185,20 +186,20 @@ const App: React.FC = () => {
         setProcessingAction(`describe-${index}`);
         setError(null);
         try {
-            const description = await describeImage(imageSrc);
+            const description = await describeImage(imageSrc, reasoningModel);
             setPrompt(description);
         } catch (err) {
             setError((err as Error).message);
         } finally {
             setProcessingAction(null);
         }
-    }, []);
+    }, [reasoningModel]);
     
     const handleCaption = useCallback(async (imageSrc: string, index: number) => {
         setProcessingAction(`caption-${index}`);
         setError(null);
         try {
-            const caption = await suggestCaption(imageSrc);
+            const caption = await suggestCaption(imageSrc, reasoningModel);
             setReferenceImages([imageSrc]);
             setPrompt(`Recreate the image in [ref-1], but add the following text as a caption: "${caption}". The caption should be elegantly placed in a suitable position, using a beautiful font with a color that is easily readable against the background. Do not obscure important details like faces or key subjects. The text should be clear and readable on a mobile screen.`);
         } catch (err) {
@@ -206,7 +207,7 @@ const App: React.FC = () => {
         } finally {
             setProcessingAction(null);
         }
-    }, []);
+    }, [reasoningModel]);
     
     const handleRemoveText = useCallback(async (imageSrc: string, index: number) => {
         setProcessingAction(`remove-text-${index}`);
@@ -267,14 +268,14 @@ const App: React.FC = () => {
         setPromptActionLoading('describe-ref-1');
         setError(null);
         try {
-            const description = await describeImage(referenceImages[0]);
+            const description = await describeImage(referenceImages[0], reasoningModel);
             setPrompt(description);
         } catch (err) {
             setError((err as Error).message);
         } finally {
             setPromptActionLoading(null);
         }
-    }, [referenceImages]);
+    }, [referenceImages, reasoningModel]);
 
     const handleCaptionRef1 = useCallback(async () => {
         if (referenceImages.length === 0) {
@@ -284,7 +285,7 @@ const App: React.FC = () => {
         setPromptActionLoading('caption-ref-1');
         setError(null);
         try {
-            const caption = await suggestCaption(referenceImages[0]);
+            const caption = await suggestCaption(referenceImages[0], reasoningModel);
             setReferenceImages([referenceImages[0]]);
             setPrompt(`Recreate the image in [ref-1], but add the following text as a caption: "${caption}". The caption should be elegantly placed in a suitable position, using a beautiful font with a color that is easily readable against the background. Do not obscure important details like faces or key subjects. The text should be clear and readable on a mobile screen.`);
         } catch (err) {
@@ -292,7 +293,7 @@ const App: React.FC = () => {
         } finally {
             setPromptActionLoading(null);
         }
-    }, [referenceImages]);
+    }, [referenceImages, reasoningModel]);
 
     const handleRemoveTextRef1 = useCallback(async () => {
         if (referenceImages.length === 0) {
@@ -352,14 +353,14 @@ const App: React.FC = () => {
         setPromptActionLoading('enhance');
         setError(null);
         try {
-            const enhanced = await enhancePrompt(prompt);
+            const enhanced = await enhancePrompt(prompt, reasoningModel);
             setPrompt(enhanced);
         } catch (err) {
             setError((err as Error).message);
         } finally {
             setPromptActionLoading(null);
         }
-    }, [prompt]);
+    }, [prompt, reasoningModel]);
 
     const handleConcept = useCallback(async () => {
         if (!prompt.trim()) {
@@ -369,14 +370,14 @@ const App: React.FC = () => {
         setPromptActionLoading('concept');
         setError(null);
         try {
-            const concept = await generateConcept(prompt);
+            const concept = await generateConcept(prompt, reasoningModel);
             setPrompt(concept);
         } catch (err) {
             setError((err as Error).message);
         } finally {
             setPromptActionLoading(null);
         }
-    }, [prompt]);
+    }, [prompt, reasoningModel]);
 
     const handlePostStoryToPrompt = useCallback((storyText: string) => {
         setPrompt(storyText);
@@ -386,7 +387,7 @@ const App: React.FC = () => {
         }
     }, []);
 
-    const isGeminiModel = model === 'gemini-2.5-flash-image' || model === 'gemini-3-pro-image-preview';
+    const isGeminiImageModel = imageModel === 'gemini-2.5-flash-image' || imageModel === 'gemini-3-pro-image-preview';
 
     return (
         <div className="bg-gray-900 text-white min-h-screen">
@@ -489,13 +490,13 @@ const App: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-300 mb-1">Aspect Ratio</label>
-                            <select value={aspectRatio} onChange={(e) => setAspectRatio(e.target.value as AspectRatio)} className="w-full bg-gray-700 border-gray-600 text-white rounded-md p-2">
+                            <select value={aspectRatio} onChange={(e) => setAspectRatio(e.target.value as AspectRatio)} className="w-full bg-gray-700 border-gray-600 text-white rounded-md p-2 focus:ring-2 focus:ring-blue-500 outline-none transition-all">
                                 {ASPECT_RATIOS.map(ratio => <option key={ratio} value={ratio}>{ratio}</option>)}
                             </select>
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-300 mb-1">Image Style</label>
-                            <select value={style} onChange={(e) => setStyle(e.target.value as ImageStyleKey)} className="w-full bg-gray-700 border-gray-600 text-white rounded-md p-2">
+                            <select value={style} onChange={(e) => setStyle(e.target.value as ImageStyleKey)} className="w-full bg-gray-700 border-gray-600 text-white rounded-md p-2 focus:ring-2 focus:ring-blue-500 outline-none transition-all">
                                 {IMAGE_STYLES.map(s => <option key={s.key} value={s.key}>{s.name}</option>)}
                             </select>
                         </div>
@@ -518,28 +519,42 @@ const App: React.FC = () => {
                     <textarea
                         ref={promptTextareaRef}
                         rows={5}
-                        className="w-full bg-gray-700 border-gray-600 text-white rounded-md p-3 mb-4 resize-none"
+                        className="w-full bg-gray-700 border-gray-600 text-white rounded-md p-3 mb-4 resize-none focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                         placeholder="Describe your vision..."
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
                     />
 
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-300 mb-1">Image Model</label>
-                        <select value={model} onChange={(e) => setModel(e.target.value as ImageModelKey)} className="w-full bg-gray-700 border-gray-600 text-white rounded-md p-2">
-                            {IMAGE_MODELS.map(m => <option key={m.key} value={m.key}>{m.name}</option>)}
-                        </select>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-1 flex items-center gap-2">
+                                <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9l-.707.707M12 18v1m4.243-4.243l.707.707M12 7a5 5 0 110 10 5 5 0 010-10z"></path></svg>
+                                Text Reasoning Model (AI Brain)
+                            </label>
+                            <select value={reasoningModel} onChange={(e) => setReasoningModel(e.target.value as ReasoningModelKey)} className="w-full bg-gray-700 border-gray-600 text-white rounded-md p-2 focus:ring-2 focus:ring-blue-400 outline-none transition-all">
+                                {REASONING_MODELS.map(m => <option key={m.key} value={m.key}>{m.name}</option>)}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-1 flex items-center gap-2">
+                                <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                Image Model (Art Style)
+                            </label>
+                            <select value={imageModel} onChange={(e) => setImageModel(e.target.value as ImageModelKey)} className="w-full bg-gray-700 border-gray-600 text-white rounded-md p-2 focus:ring-2 focus:ring-indigo-400 outline-none transition-all">
+                                {IMAGE_MODELS.map(m => <option key={m.key} value={m.key}>{m.name}</option>)}
+                            </select>
+                        </div>
                     </div>
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <button
                             onClick={() => handleGenerate(1)}
                             disabled={loading || !prompt.trim()}
-                            className={`bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-bold py-3 rounded-md transition-all shadow-md active:scale-95 ${(isGeminiModel || referenceImages.length > 0) ? 'sm:col-span-2' : ''}`}
+                            className={`bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-bold py-3 rounded-md transition-all shadow-md active:scale-95 ${(isGeminiImageModel || referenceImages.length > 0) ? 'sm:col-span-2' : ''}`}
                         >
                             {loading && loadingCount === 1 ? <Spinner /> : `Generate`}
                         </button>
-                        {!(isGeminiModel || referenceImages.length > 0) && (
+                        {!(isGeminiImageModel || referenceImages.length > 0) && (
                              <button
                                 onClick={() => handleGenerate(4)}
                                 disabled={loading || !prompt.trim()}
@@ -549,7 +564,7 @@ const App: React.FC = () => {
                             </button>
                         )}
                     </div>
-                    <StoryWriter onPostToPrompt={handlePostStoryToPrompt} selectedStyle={style} />
+                    <StoryWriter onPostToPrompt={handlePostStoryToPrompt} selectedStyle={style} selectedReasoningModel={reasoningModel} />
                 </section>
             </div>
         </div>
