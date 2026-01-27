@@ -53,7 +53,7 @@ export const generateFromText = async (
             },
         });
         return response.generatedImages.map(img => `data:image/png;base64,${img.image.imageBytes}`);
-    } else if (model.includes('gemini') && model.includes('image')) {
+    } else if (model.includes('gemini') || model.includes('flash') || model.includes('pro')) {
         const response = await ai.models.generateContent({
             model,
             contents: { parts: [{ text: fullPrompt }] },
@@ -71,7 +71,7 @@ export const generateFromText = async (
             }
         }
         if (images.length === 0) {
-            throw new Error(`Generation failed. Ensure your API Key is valid.`);
+            throw new Error(`Generation failed. Ensure your API Key is valid and the model supports image generation.`);
         }
         return images;
     }

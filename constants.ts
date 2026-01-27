@@ -44,6 +44,9 @@ export const IMAGE_MODELS = [
     { key: 'gemini-3-pro-image-preview', name: 'Gemini 3.0 Pro Image (Best Text/Thai)' },
     { key: 'gemini-2.5-flash-image', name: 'Gemini 2.5 Flash Image (Max Quota/Fast)' },
     { key: 'gemini-2.0-flash-image', name: 'Gemini 2.0 Flash Image (Fast)' },
+    { key: 'gemini-flash-latest', name: 'Gemini Flash (Latest Stable)' },
+    { key: 'gemini-pro-latest', name: 'Gemini Pro (Latest Stable)' },
+    { key: 'gemini-flash-lite-latest', name: 'Gemini Flash Lite (Fastest Stable)' },
 ] as const;
 
 export type ImageModelKey = typeof IMAGE_MODELS[number]['key'];
