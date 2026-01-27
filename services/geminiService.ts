@@ -53,7 +53,7 @@ export const generateFromText = async (
             },
         });
         return response.generatedImages.map(img => `data:image/png;base64,${img.image.imageBytes}`);
-    } else if (model === 'gemini-2.5-flash-image' || model === 'gemini-3-pro-image-preview') {
+    } else if (model.includes('gemini') && model.includes('image')) {
         const response = await ai.models.generateContent({
             model,
             contents: { parts: [{ text: fullPrompt }] },

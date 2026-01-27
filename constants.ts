@@ -42,7 +42,8 @@ export const STYLE_PROMPT_PREFIXES: Record<ImageStyleKey, string> = {
 export const IMAGE_MODELS = [
     { key: 'imagen-4.0-generate-001', name: 'Imagen 4.0 (Highest Quality)' },
     { key: 'gemini-3-pro-image-preview', name: 'Gemini 3.0 Pro Image (Best Text/Thai)' },
-    { key: 'gemini-2.5-flash-image', name: 'Gemini 2.5 Flash Image (Faster/Backup)' },
+    { key: 'gemini-2.5-flash-image', name: 'Gemini 2.5 Flash Image (Max Quota/Fast)' },
+    { key: 'gemini-2.0-flash-image', name: 'Gemini 2.0 Flash Image (Fast)' },
 ] as const;
 
 export type ImageModelKey = typeof IMAGE_MODELS[number]['key'];
