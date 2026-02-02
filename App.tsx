@@ -36,6 +36,7 @@ const App: React.FC = () => {
     const [style, setStyle] = useState<ImageStyleKey>('photorealistic');
     const [imageModel, setImageModel] = useState<ImageModelKey>('gemini-2.5-flash-image');
     const [reasoningModel, setReasoningModel] = useState<ReasoningModelKey>('gemini-3-flash-preview');
+    const [maxCaptionLength, setMaxCaptionLength] = useState<number>(60);
     const [images, setImages] = useState<string[]>([]);
     const [referenceImages, setReferenceImages] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -94,7 +95,6 @@ const App: React.FC = () => {
             return;
         }
 
-        // Check key status before proceeding
         const hasKey = localStorage.getItem('user_api_key') || (process.env.API_KEY && process.env.API_KEY !== 'PLACEHOLDER_API_KEY');
         if (!hasKey && imageModel === 'gemini-3-pro-image-preview') {
             try {
@@ -199,15 +199,17 @@ const App: React.FC = () => {
         setProcessingAction(`caption-${index}`);
         setError(null);
         try {
-            const caption = await suggestCaption(imageSrc, reasoningModel);
+            const caption = await suggestCaption(imageSrc, reasoningModel, maxCaptionLength);
             setReferenceImages([imageSrc]);
-            setPrompt(`Recreate the image in [ref-1], but add the following text as a caption: "${caption}". The caption should be elegantly placed in a suitable position, using a beautiful font with a color that is easily readable against the background. Do not obscure important details like faces or key subjects. The text should be clear and readable on a mobile screen.`);
+            const isThai = /[ก-ฮ]/.test(caption);
+            const textType = isThai ? "Thai text" : "text";
+            setPrompt(`Recreate the image in [ref-1], but add the following ${textType} as a caption: "${caption}". The ${textType} should be elegantly placed in a suitable position, using a beautiful font with a color that is easily readable against the background. Do not obscure important details like faces or key subjects. The ${textType} MUST be clear and readable, using the exact characters provided without translation.`);
         } catch (err) {
             setError((err as Error).message);
         } finally {
             setProcessingAction(null);
         }
-    }, [reasoningModel]);
+    }, [reasoningModel, maxCaptionLength]);
     
     const handleRemoveText = useCallback(async (imageSrc: string, index: number) => {
         setProcessingAction(`remove-text-${index}`);
@@ -285,15 +287,17 @@ const App: React.FC = () => {
         setPromptActionLoading('caption-ref-1');
         setError(null);
         try {
-            const caption = await suggestCaption(referenceImages[0], reasoningModel);
+            const caption = await suggestCaption(referenceImages[0], reasoningModel, maxCaptionLength);
             setReferenceImages([referenceImages[0]]);
-            setPrompt(`Recreate the image in [ref-1], but add the following text as a caption: "${caption}". The caption should be elegantly placed in a suitable position, using a beautiful font with a color that is easily readable against the background. Do not obscure important details like faces or key subjects. The text should be clear and readable on a mobile screen.`);
+            const isThai = /[ก-ฮ]/.test(caption);
+            const textType = isThai ? "Thai text" : "text";
+            setPrompt(`Recreate the image in [ref-1], but add the following ${textType} as a caption: "${caption}". The ${textType} should be elegantly placed in a suitable position, using a beautiful font with a color that is easily readable against the background. Do not obscure important details like faces or key subjects. The ${textType} MUST be clear and readable, using the exact characters provided without translation.`);
         } catch (err) {
             setError((err as Error).message);
         } finally {
             setPromptActionLoading(null);
         }
-    }, [referenceImages, reasoningModel]);
+    }, [referenceImages, reasoningModel, maxCaptionLength]);
 
     const handleRemoveTextRef1 = useCallback(async () => {
         if (referenceImages.length === 0) {
@@ -564,7 +568,13 @@ const App: React.FC = () => {
                             </button>
                         )}
                     </div>
-                    <StoryWriter onPostToPrompt={handlePostStoryToPrompt} selectedStyle={style} selectedReasoningModel={reasoningModel} />
+                    <StoryWriter 
+                        onPostToPrompt={handlePostStoryToPrompt} 
+                        selectedStyle={style} 
+                        selectedReasoningModel={reasoningModel} 
+                        maxCaptionLength={maxCaptionLength}
+                        onMaxCaptionLengthChange={setMaxCaptionLength}
+                    />
                 </section>
             </div>
         </div>

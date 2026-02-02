@@ -8,6 +8,8 @@ interface StoryWriterProps {
     onPostToPrompt: (storyText: string) => void;
     selectedStyle: ImageStyleKey;
     selectedReasoningModel: ReasoningModelKey;
+    maxCaptionLength: number;
+    onMaxCaptionLengthChange: (length: number) => void;
 }
 
 const ActionButton: React.FC<{
@@ -29,7 +31,13 @@ const ActionButton: React.FC<{
     </button>
 );
 
-const StoryWriter: React.FC<StoryWriterProps> = ({ onPostToPrompt, selectedStyle, selectedReasoningModel }) => {
+const StoryWriter: React.FC<StoryWriterProps> = ({ 
+    onPostToPrompt, 
+    selectedStyle, 
+    selectedReasoningModel,
+    maxCaptionLength,
+    onMaxCaptionLengthChange
+}) => {
     const [story, setStory] = useState('');
     const [fileName, setFileName] = useState('story.txt');
     const [language, setLanguage] = useState<StoryLanguageKey>('thai');
@@ -120,8 +128,8 @@ const StoryWriter: React.FC<StoryWriterProps> = ({ onPostToPrompt, selectedStyle
         setLoadingAction('caption');
         setError(null);
         try {
-            const caption = await generateStoryCaption(story, selectedReasoningModel, 'English');
-            const fullPrompt = `Recreate the image in [ref-1], but add the following text as a caption: "${caption}". The caption should be elegantly placed in a suitable position, using a beautiful font with a color that is easily readable against the background. Do not obscure important details like faces or key subjects. The text should be clear and readable on a mobile screen.`;
+            const caption = await generateStoryCaption(story, selectedReasoningModel, 'English', maxCaptionLength);
+            const fullPrompt = `Recreate the image in [ref-1], but add the following text as a caption: "${caption}". The text should be elegantly placed in a suitable position, using a beautiful font with a color that is easily readable against the background. Do not obscure important details like faces or key subjects. The text should be clear and readable on a mobile screen. Use the exact text provided without translation.`;
             onPostToPrompt(fullPrompt);
         } catch (err) {
             setError((err as Error).message);
@@ -138,8 +146,8 @@ const StoryWriter: React.FC<StoryWriterProps> = ({ onPostToPrompt, selectedStyle
         setLoadingAction('caption-thai');
         setError(null);
         try {
-            const caption = await generateStoryCaption(story, selectedReasoningModel, 'Thai');
-            const fullPrompt = `Recreate the image in [ref-1], but add the following text as a caption: "${caption}". The caption should be elegantly placed in a suitable position, using a beautiful font with a color that is easily readable against the background. Do not obscure important details like faces or key subjects. The text should be clear and readable on a mobile screen.`;
+            const caption = await generateStoryCaption(story, selectedReasoningModel, 'Thai', maxCaptionLength);
+            const fullPrompt = `Recreate the image in [ref-1], but add the following Thai text as a caption: "${caption}". The Thai text should be elegantly placed in a suitable position, using a beautiful font with a color that is easily readable against the background. Do not obscure important details like faces or key subjects. The Thai text MUST be rendered exactly as written in Thai characters, without any translation to English.`;
             onPostToPrompt(fullPrompt);
         } catch (err) {
             setError((err as Error).message);
@@ -159,11 +167,11 @@ const StoryWriter: React.FC<StoryWriterProps> = ({ onPostToPrompt, selectedStyle
             const styleName = IMAGE_STYLES.find(s => s.key === selectedStyle)?.name || 'Photorealistic';
             
             const [caption, designPrompt] = await Promise.all([
-                generateStoryCaption(story, selectedReasoningModel, 'Thai'),
+                generateStoryCaption(story, selectedReasoningModel, 'Thai', maxCaptionLength),
                 generateDesignFromStory(story, styleName, selectedReasoningModel)
             ]);
             
-            const fullPrompt = `${designPrompt} Text in the image: "${caption}". The caption should be elegantly placed in a suitable position, using a beautiful font with a color that is easily readable against the background. Do not obscure important details like faces or key subjects. The text should be clear and readable on a mobile screen.`;
+            const fullPrompt = `${designPrompt} Thai text in the image: "${caption}". The Thai text should be elegantly placed in a suitable position, using a beautiful font with a color that is easily readable against the background. Do not obscure important details like faces or key subjects. The Thai text MUST be rendered exactly as written in Thai characters, without any translation to English.`;
             onPostToPrompt(fullPrompt);
         } catch (err) {
             setError((err as Error).message);
@@ -271,6 +279,21 @@ const StoryWriter: React.FC<StoryWriterProps> = ({ onPostToPrompt, selectedStyle
                         {STORY_STYLES.map(s => <option key={s.key} value={s.key}>{s.name}</option>)}
                     </select>
                 </div>
+            </div>
+
+            {/* Max Caption Length Setting */}
+            <div className="mb-4 flex flex-col items-center">
+                 <label htmlFor="maxCaptionLength" className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
+                    Max Caption Length (Characters)
+                 </label>
+                 <input 
+                    type="number"
+                    id="maxCaptionLength"
+                    value={maxCaptionLength}
+                    onChange={(e) => onMaxCaptionLengthChange(parseInt(e.target.value) || 0)}
+                    className="w-24 bg-gray-900 border border-gray-700 text-center text-blue-400 font-bold rounded-md py-1.5 outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm"
+                 />
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">

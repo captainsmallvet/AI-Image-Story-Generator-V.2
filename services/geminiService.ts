@@ -121,7 +121,7 @@ export const describeImage = async (imageSrc: string, model: ReasoningModelKey =
     return response.text || "";
 };
 
-export const suggestCaption = async (imageSrc: string, model: ReasoningModelKey = 'gemini-3-flash-preview'): Promise<string> => {
+export const suggestCaption = async (imageSrc: string, model: ReasoningModelKey = 'gemini-3-flash-preview', maxLength: number = 60): Promise<string> => {
     const ai = getAi();
     const { mimeType, data } = parseDataUrl(imageSrc);
     const response = await ai.models.generateContent({
@@ -129,7 +129,7 @@ export const suggestCaption = async (imageSrc: string, model: ReasoningModelKey 
         contents: {
             parts: [
                 { inlineData: { mimeType, data } },
-                { text: "Suggest a short, witty, and engaging caption for this image suitable for social media. Respond with only the caption text." }
+                { text: `Suggest an engaging caption for this image suitable for social media. Max ${maxLength} characters. Respond with only the caption text.` }
             ]
         },
     });
@@ -226,10 +226,10 @@ export const generateNextSentence = async (
     return (response.text || "").trim();
 };
 
-export const generateStoryCaption = async (story: string, model: ReasoningModelKey, language: 'English' | 'Thai' = 'English'): Promise<string> => {
+export const generateStoryCaption = async (story: string, model: ReasoningModelKey, language: 'English' | 'Thai' = 'English', maxLength: number = 60): Promise<string> => {
     const ai = getAi();
     const lang = language === 'Thai' ? 'Thai' : 'English';
-    const prompt = `Summarize this story in ONE short sentence in ${lang}. Max 60 chars.\nStory: ${story}`;
+    const prompt = `Create a catchy caption for this story in ${lang}. Max ${maxLength} characters. Respond with only the caption text.\nStory: ${story}`;
     const response = await ai.models.generateContent({
         model,
         contents: prompt,
