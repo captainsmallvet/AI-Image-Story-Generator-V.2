@@ -40,23 +40,27 @@ export const STYLE_PROMPT_PREFIXES: Record<ImageStyleKey, string> = {
 };
 
 export const IMAGE_MODELS = [
-    { key: 'imagen-4.0-generate-001', name: 'Imagen 4.0 (Highest Quality)' },
-    { key: 'gemini-3-pro-image-preview', name: 'Gemini 3.0 Pro Image (Best Text/Thai)' },
+    { key: 'gemini-3.1-flash-image-preview', name: 'Gemini 3.1 Flash Image (High Quality)' },
+    { key: 'gemini-3-pro-image-preview', name: 'Gemini 3.0 Pro Image (Premium) (Best Text/Thai)' },
     { key: 'gemini-2.5-flash-image', name: 'Gemini 2.5 Flash Image (Max Quota/Fast)' },
-    { key: 'gemini-2.0-flash-image', name: 'Gemini 2.0 Flash Image (Fast)' },
-    { key: 'gemini-flash-latest', name: 'Gemini Flash (Latest Stable)' },
-    { key: 'gemini-pro-latest', name: 'Gemini Pro (Latest Stable)' },
+    { key: 'imagen-4.0-generate-001', name: 'Imagen 4.0' },
+    { key: 'gemini-flash-image-latest', name: 'Gemini Flash Image Latest' },
+    { key: 'gemini-pro-image-latest', name: 'Gemini Pro Image Latest' },
     { key: 'gemini-flash-lite-latest', name: 'Gemini Flash Lite (Fastest Stable)' },
 ] as const;
 
 export type ImageModelKey = typeof IMAGE_MODELS[number]['key'];
 
 export const REASONING_MODELS = [
-    { key: 'gemini-3-flash-preview', name: 'Gemini 3.0 Flash (New Preview)' },
-    { key: 'gemini-3-pro-preview', name: 'Gemini 3.0 Pro (New Preview)' },
-    { key: 'gemini-flash-latest', name: 'Gemini Flash (Latest Stable)' },
+    { key: 'gemini-3-flash-preview', name: 'Gemini 3 Flash Preview' },
+    { key: 'gemini-3.1-pro-preview', name: 'Gemini 3.1 Pro Preview' },
+    { key: 'gemini-3-pro-preview', name: 'Gemini 3.0 Pro Preview' },
+    { key: 'gemini-3.1-flash-lite-preview', name: 'Gemini 3.1 Flash Lite Preview' },
+    { key: 'gemini-flash-latest', name: 'Gemini Flash Latest' },
+    { key: 'gemini-flash-lite-latest', name: 'Gemini Flash Lite Latest' },
+    { key: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash' },
+    { key: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro' },
     { key: 'gemini-pro-latest', name: 'Gemini Pro (Latest Stable)' },
-    { key: 'gemini-flash-lite-latest', name: 'Gemini Flash Lite (Fastest)' },
 ] as const;
 
 export type ReasoningModelKey = typeof REASONING_MODELS[number]['key'];
