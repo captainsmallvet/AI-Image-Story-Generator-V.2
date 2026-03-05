@@ -40,13 +40,16 @@ export const STYLE_PROMPT_PREFIXES: Record<ImageStyleKey, string> = {
 };
 
 export const IMAGE_MODELS = [
-    { key: 'gemini-3.1-flash-image-preview', name: 'Gemini 3.1 Flash Image (High Quality)' },
-    { key: 'gemini-3-pro-image-preview', name: 'Gemini 3.0 Pro Image (Premium) (Best Text/Thai)' },
-    { key: 'gemini-2.5-flash-image', name: 'Gemini 2.5 Flash Image (Max Quota/Fast)' },
-    { key: 'imagen-4.0-generate-001', name: 'Imagen 4.0' },
-    { key: 'gemini-flash-image-latest', name: 'Gemini Flash Image Latest' },
-    { key: 'gemini-pro-image-latest', name: 'Gemini Pro Image Latest' },
-    { key: 'gemini-flash-lite-latest', name: 'Gemini Flash Lite (Fastest Stable)' },
+  { key: 'gemini-3.1-flash-image-preview', name: 'Gemini 3.1 Flash Image (High Quality)' },
+  { key: 'gemini-3-pro-image-preview', name: 'Gemini 3.0 Pro Image (Premium)' },
+  { key: 'gemini-2.5-flash-image', name: 'Gemini 2.5 Flash Image (Standard)' },
+  { key: 'imagen-4.0-generate-001', name: 'Imagen 4.0' },
+  { key: 'gemini-flash-image-latest', name: 'Gemini Flash Image Latest' },
+  { key: 'gemini-pro-image-latest', name: 'Gemini Pro Image Latest' },
+  { key: 'gemini-flash-latest', name: 'gemini-flash-latest' },
+  { key: 'gemini-flash-lite-latest', name: 'gemini-flash-lite-latest' },
+  { key: 'gemini-3-flash-preview', name: 'gemini-3-flash-preview' },
+  { key: 'gemini-3.1-pro-preview', name: 'gemini-3.1-pro-preview' },
 ] as const;
 
 export type ImageModelKey = typeof IMAGE_MODELS[number]['key'];
