@@ -45,7 +45,7 @@ export const IMAGE_MODELS = [
   { key: 'gemini-2.5-flash-image', name: 'Gemini 2.5 Flash Image (Standard)' },
   { key: 'imagen-4.0-generate-001', name: '(25)Imagen 4 Generate' },
   { key: 'imagen-4.0-ultra-generate-001', name: '(25)Imagen 4 Ultra Generate' },
-  { key: 'imagen-4.0-fast-generate-001 Model', name: '(25)Imagen 4 Fast Generate' },
+  { key: 'imagen-4.0-fast-generate-001', name: '(25)Imagen 4 Fast Generate' },
   { key: 'gemini-flash-image-latest', name: 'Gemini Flash Image Latest' },
   { key: 'gemini-pro-image-latest', name: 'Gemini Pro Image Latest' },
   { key: 'gemini-flash-latest', name: 'gemini-flash-latest' },
@@ -57,14 +57,15 @@ export const IMAGE_MODELS = [
 export type ImageModelKey = typeof IMAGE_MODELS[number]['key'];
 
 export const REASONING_MODELS = [
-    { key: 'gemini-3-flash-preview', name: 'Gemini 3 Flash Preview' },
-    { key: 'gemini-3.1-pro-preview', name: 'Gemini 3.1 Pro Preview' },
+    { key: 'gemini-3-flash-preview', name: '(20)Gemini 3 Flash Preview' },
+    { key: 'gemini-3.1-pro-preview', name: '(0)Gemini 3.1 Pro Preview' },
     { key: 'gemini-3-pro-preview', name: 'Gemini 3.0 Pro Preview' },
-    { key: 'gemini-3.1-flash-lite-preview', name: 'Gemini 3.1 Flash Lite Preview' },
+    { key: 'gemini-3.1-flash-lite-preview', name: '(500)Gemini 3.1 Flash Lite Preview' },
     { key: 'gemini-flash-latest', name: 'Gemini Flash Latest' },
     { key: 'gemini-flash-lite-latest', name: 'Gemini Flash Lite Latest' },
-    { key: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash' },
-    { key: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro' },
+    { key: 'gemini-2.5-flash', name: '(20)Gemini 2.5 Flash' },
+    { key: 'gemini-2.5-flash-lite', name: '(20)Gemini 2.5 Flash Lite' },
+    { key: 'gemini-2.5-pro', name: '(0)Gemini 2.5 Pro' },
     { key: 'gemini-pro-latest', name: 'Gemini Pro (Latest Stable)' },
 ] as const;
 
