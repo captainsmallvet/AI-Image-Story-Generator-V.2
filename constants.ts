@@ -97,7 +97,7 @@ export const STORY_STYLES = [
     { key: 'sci_fi_novel', name: 'นิยายวิทยาศาสตร์' },
     { key: 'horror_novel', name: 'แนวผีหลอกวิญญาณหลอน' },
     { key: 'lighthearted_comedy', name: 'เรื่องตลก เบาสมอง' },
-    { key: 'inspiration', name: 'สร้างแรงบันาลใจ' },
+    { key: 'inspiration', name: 'สร้างแรงบันดาลใจ' },
     { key: 'analysis', name: 'พูดเชิงวิเคราะห์' },
     { key: 'adventure', name: 'ผจญภัย บู้ ตื่นเต้น' },
     { key: 'tear_jerker', name: 'เรื่องเศร้าเคล้าน้ำตา' },
