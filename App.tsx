@@ -35,7 +35,7 @@ const App: React.FC = () => {
     const [aspectRatio, setAspectRatio] = useState<AspectRatio>('16:9');
     const [style, setStyle] = useState<ImageStyleKey>('photorealistic');
     const [imageModel, setImageModel] = useState<ImageModelKey>('gemini-2.5-flash-image');
-    const [reasoningModel, setReasoningModel] = useState<ReasoningModelKey>('gemini-3-flash-preview');
+    const [reasoningModel, setReasoningModel] = useState<ReasoningModelKey>('gemini-3.5-flash');
     const [maxCaptionLength, setMaxCaptionLength] = useState<number>(60);
     const [images, setImages] = useState<string[]>([]);
     const [referenceImages, setReferenceImages] = useState<string[]>([]);
