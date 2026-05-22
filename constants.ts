@@ -57,9 +57,9 @@ export const IMAGE_MODELS = [
 export type ImageModelKey = typeof IMAGE_MODELS[number]['key'];
 
 export const REASONING_MODELS = [
+    { key: 'gemini-3.5-flash', name: '(20)Gemini 3.5 Flash' },
     { key: 'gemini-3-flash-preview', name: '(20)Gemini 3 Flash Preview' },
     { key: 'gemini-3.1-pro-preview', name: '(0)Gemini 3.1 Pro Preview' },
-    { key: 'gemini-3-pro-preview', name: 'Gemini 3.0 Pro Preview' },
     { key: 'gemini-3.1-flash-lite', name: '(500)Gemini 3.1 Flash Lite' },
     { key: 'gemini-flash-latest', name: 'Gemini Flash Latest' },
     { key: 'gemini-flash-lite-latest', name: 'Gemini Flash Lite Latest' },
